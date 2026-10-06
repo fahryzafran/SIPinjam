@@ -1,0 +1,16 @@
+#environtment / konfigurasi lokal
+.env
+
+#composer
+/vendor/
+
+#os
+Thumbs.db
+.DS_Store
+
+#editor
+.vscode/
+.idea/
+
+#php temporary files
+*.log
