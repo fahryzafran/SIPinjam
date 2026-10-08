@@ -1124,20 +1124,6 @@ body:has(.sidebar.collapsed) .main-content {
 }
 
 /* =========================================
-   LAYOUT SAAT SIDEBAR COLLAPSED
-   ========================================= */
-
-body:has(.sidebar.collapsed) .topbar {
-    margin-left: 72px;
-    width: calc(100% - 72px);
-}
-
-body:has(.sidebar.collapsed) .main-content {
-    margin-left: 72px !important;
-    width: calc(100% - 72px) !important;
-}
-
-/* =========================================
    KATALOG ALAT
    ========================================= */
 
@@ -2061,4 +2047,971 @@ body:has(.sidebar.collapsed) .main-content {
         align-items: stretch;
     }
 
+}
+
+
+/* =========================================
+   BORROWING: STEP 1 - INFORMASI ALAT
+   ========================================= */
+
+.borrowing-page {
+    min-width: 0;
+}
+
+.borrowing-header {
+    margin-bottom: 26px;
+}
+
+/* Stepper */
+
+.borrowing-stepper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.borrowing-step {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.step-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--background);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.step-circle svg {
+    width: 16px;
+    height: 16px;
+}
+
+.borrowing-step.active {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.borrowing-step.active .step-circle {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.step-line {
+    flex: 1;
+    min-width: 12px;
+    height: 1px;
+    margin-top: 17px;
+    background: var(--border);
+}
+
+/* Dua kolom */
+
+.borrowing-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: stretch;
+    gap: 18px;
+}
+
+.borrowing-panel {
+    min-width: 0;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(40, 36, 38, 0.03);
+}
+
+.borrowing-panel h2 {
+    margin: 0;
+    color: var(--text);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* Kartu alat */
+
+.selected-equipment {
+    display: flex;
+    flex-direction: column;
+}
+
+.borrowing-equipment-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 210px;
+    margin-top: 18px;
+    background: var(--background);
+    border-radius: 10px;
+    color: var(--primary);
+}
+
+.borrowing-equipment-image svg {
+    width: 66px;
+    height: 66px;
+    stroke-width: 1.4;
+}
+
+.borrowing-equipment-name {
+    margin-top: 18px;
+}
+
+.borrowing-equipment-name h3 {
+    margin: 0 0 5px;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.borrowing-equipment-name span {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.borrowing-equipment-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 24px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.borrowing-equipment-footer strong {
+    color: var(--text);
+}
+
+.stock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #e8f5ed;
+    color: #247348;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.stock-badge svg {
+    width: 12px;
+    height: 12px;
+}
+
+.stock-badge.unavailable {
+    background: #f9e8e8;
+    color: #a42e35;
+}
+
+/* Detail alat */
+
+.borrowing-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.borrowing-section + .borrowing-section {
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+}
+
+.borrowing-quantity-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.quantity-value {
+    display: flex;
+    flex: 0 0 52px;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--background);
+    color: var(--text);
+    font-weight: 700;
+}
+
+.borrowing-quantity-row p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.borrowing-section-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.standard-badge {
+    padding: 4px 7px;
+    background: var(--background);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.borrowing-description {
+    margin: 12px 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.borrowing-spec-list {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--background);
+}
+
+.borrowing-spec-row {
+    display: grid;
+    grid-template-columns: minmax(100px, 36%) minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-height: 42px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+}
+
+.borrowing-spec-row:last-child {
+    border-bottom: none;
+}
+
+.borrowing-spec-row span {
+    color: var(--muted);
+}
+
+.borrowing-spec-row strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.borrowing-empty-spec {
+    margin: 0;
+    padding: 14px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* Info */
+
+.borrowing-info-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--background);
+    color: var(--muted);
+}
+
+.borrowing-info-note > svg {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    color: var(--primary);
+}
+
+.borrowing-info-note p {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.borrowing-info-note.warning > svg {
+    color: #a42e35;
+}
+
+/* Tombol navigasi */
+
+.borrowing-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.borrowing-back-button,
+.borrowing-next-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 9px;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.borrowing-back-button {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+}
+
+.borrowing-back-button:hover {
+    background: var(--background);
+    color: var(--text);
+}
+
+.borrowing-next-button {
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    color: #fff;
+}
+
+.borrowing-next-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.borrowing-next-button svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* Responsif */
+
+@media (max-width: 900px) {
+    .borrowing-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .borrowing-equipment-image {
+        min-height: 180px;
+    }
+}
+
+@media (max-width: 600px) {
+    .borrowing-stepper {
+        gap: 5px;
+        padding: 16px 10px;
+    }
+
+    .borrowing-step {
+        flex: 1 1 0;
+        min-width: 0;
+        font-size: 10px;
+    }
+
+    .step-line {
+        flex: 0 0 8px;
+    }
+
+    .borrowing-panel {
+        padding: 18px;
+    }
+
+    .borrowing-actions {
+        flex-wrap: wrap;
+    }
+
+    .borrowing-back-button,
+    .borrowing-next-button {
+        flex: 1;
+    }
+}
+
+
+/* Kelengkapan tambahan peminjaman */
+
+.borrowing-extras {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.borrowing-extras .extras-description {
+    margin: -3px 0 2px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.extra-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color 0.2s ease,
+                background 0.2s ease;
+}
+
+.extra-option:has(input:checked) {
+    border-color: var(--primary);
+    background: var(--background);
+}
+
+.extra-option input {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.extra-option-text {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    color: var(--text);
+    font-size: 12px;
+}
+
+.extra-option-text svg {
+    width: 15px;
+    height: 15px;
+    color: var(--primary);
+}
+
+.extra-option-text small {
+    color: var(--muted);
+    font-size: 10px;
+}
+
+
+.selected-equipment .borrowing-left-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.selected-equipment .borrowing-left-details .borrowing-section {
+    padding: 0;
+    border: 0;
+}
+
+.selected-equipment .borrowing-left-details .borrowing-description {
+    margin: 10px 0 0;
+    line-height: 1.7;
+}
+
+.selected-equipment .borrowing-left-details .borrowing-spec-list {
+    margin-top: 12px;
+}
+
+
+/* Detail peminjaman: daftar kelengkapan standar */
+
+.borrowing-standard {
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.borrowing-standard .borrowing-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.borrowing-standard .borrowing-section-heading h2 {
+    margin: 0;
+}
+
+.borrowing-standard .standard-badge {
+    flex-shrink: 0;
+    padding: 4px 7px;
+    border-radius: 4px;
+    background: var(--background);
+    color: var(--muted);
+    font-size: 9px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.standard-equipment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.standard-equipment-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.standard-equipment-item svg {
+    display: block;
+    flex: 0 0 13px;
+    width: 13px;
+    height: 13px;
+    color: #20a66a;
+    stroke-width: 2.5;
+}
+
+.standard-equipment-item span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+
+/* Detail peminjaman: ukuran lebih nyaman dibaca */
+
+.borrowing-standard .borrowing-section-heading {
+    margin-bottom: 16px;
+}
+
+.borrowing-standard .borrowing-section-heading h2 {
+    font-size: 15px;
+}
+
+.borrowing-standard .standard-badge {
+    padding: 5px 9px;
+    font-size: 10px;
+}
+
+.standard-equipment-list {
+    gap: 12px;
+}
+
+.standard-equipment-item {
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.standard-equipment-item svg {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.3;
+}
+
+.borrowing-standard {
+    padding-bottom: 22px;
+}
+
+
+/* FIX FINAL: SIDEBAR, KONTEN, DAN TOPBAR */
+
+:root {
+    --sipaka-sidebar-open: 255px;
+    --sipaka-sidebar-closed: 72px;
+    --sipaka-topbar-height: 72px;
+}
+
+html {
+    min-height: 100%;
+    overflow-x: clip;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: clip;
+}
+
+/* Area utama */
+.main-wrapper {
+    position: relative;
+    width: calc(100% - var(--sipaka-sidebar-open)) !important;
+    min-width: 0;
+    min-height: 100vh;
+    margin: 0 0 0 var(--sipaka-sidebar-open) !important;
+    padding-top: var(--sipaka-topbar-height);
+    box-sizing: border-box;
+    overflow: visible;
+    transition: margin-left 0.25s ease, width 0.25s ease;
+}
+
+/* Ketika sidebar diminimalkan */
+.main-wrapper.sidebar-collapsed {
+    width: calc(100% - var(--sipaka-sidebar-closed)) !important;
+    margin-left: var(--sipaka-sidebar-closed) !important;
+}
+
+/* Navbar selalu menempel di atas layar */
+.main-wrapper > .topbar {
+    position: fixed !important;
+    top: 0;
+    left: var(--sipaka-sidebar-open);
+    right: 0;
+    z-index: 1100;
+    width: auto !important;
+    height: var(--sipaka-topbar-height);
+    margin: 0 !important;
+    box-sizing: border-box;
+    background: var(--surface);
+    transition: left 0.25s ease;
+}
+
+/* Navbar mengikuti lebar sidebar yang mengecil */
+body:has(.sidebar.collapsed) .main-wrapper > .topbar {
+    left: var(--sipaka-sidebar-closed);
+}
+
+/* Konten tidak bergeser dua kali dan tidak melebar keluar */
+.main-wrapper > .main-content,
+body:has(.sidebar.collapsed) .main-wrapper > .main-content {
+    position: relative;
+    width: 100% !important;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 32px 36px;
+    box-sizing: border-box;
+}
+
+/* Jangan gunakan aturan lebar konten lama saat sidebar mengecil */
+body:has(.sidebar.collapsed) .main-content {
+    width: 100% !important;
+    margin-left: 0 !important;
+    box-sizing: border-box;
+}
+
+/* Sesuaikan dengan lebar sidebar versi mobile */
+@media (max-width: 768px) {
+    .main-wrapper {
+        width: calc(100% - 220px) !important;
+        margin-left: 220px !important;
+    }
+
+    .main-wrapper.sidebar-collapsed {
+        width: calc(100% - 72px) !important;
+        margin-left: 72px !important;
+    }
+
+    .main-wrapper > .topbar {
+        left: 220px;
+    }
+
+    body:has(.sidebar.collapsed) .main-wrapper > .topbar {
+        left: 72px;
+    }
+
+    .main-wrapper > .main-content,
+    body:has(.sidebar.collapsed) .main-wrapper > .main-content {
+        padding: 24px;
+    }
+}
+
+
+/* FIX: POSISI KONTEN MENGIKUTI SIDEBAR */
+
+.sidebar:not(.collapsed) ~ .main-wrapper {
+    width: calc(100% - 255px) !important;
+    margin-left: 255px !important;
+}
+
+.sidebar.collapsed ~ .main-wrapper {
+    width: calc(100% - 72px) !important;
+    margin-left: 72px !important;
+}
+
+/* Pastikan isi halaman mengikuti wrapper */
+.sidebar ~ .main-wrapper > .main-content {
+    width: 100% !important;
+    margin-left: 0 !important;
+    box-sizing: border-box;
+}
+
+.sidebar.collapsed ~ .main-wrapper > .main-content {
+    width: 100% !important;
+    margin-left: 0 !important;
+}
+
+/* Navbar tetap di kanan sidebar */
+.sidebar:not(.collapsed) ~ .main-wrapper > .topbar {
+    left: 255px !important;
+    right: 0 !important;
+    width: auto !important;
+}
+
+.sidebar.collapsed ~ .main-wrapper > .topbar {
+    left: 72px !important;
+    right: 0 !important;
+    width: auto !important;
+}
+
+
+
+/* AJUKAN PEMINJAMAN: LAYOUT SATU LAYAR */
+
+body:has(.borrowing-page) {
+    height: 100vh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+body:has(.borrowing-page) .main-wrapper {
+    height: 100vh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    padding-top: 72px !important;
+    box-sizing: border-box;
+}
+
+body:has(.borrowing-page) .main-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 72px) !important;
+    min-height: 0 !important;
+    padding: 16px 28px 12px !important;
+    overflow: hidden !important;
+    box-sizing: border-box;
+}
+
+/* Judul dan stepper */
+body:has(.borrowing-page) .borrowing-header {
+    flex: 0 0 auto;
+    margin-bottom: 12px !important;
+}
+
+body:has(.borrowing-page) .borrowing-stepper {
+    flex: 0 0 auto;
+    margin: 0 0 14px !important;
+    padding: 14px 20px;
+}
+
+/* Area utama mengisi ruang tersisa */
+body:has(.borrowing-page) .borrowing-page {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-height: 0 !important;
+    overflow: hidden;
+}
+
+body:has(.borrowing-page) .borrowing-layout {
+    display: grid;
+    flex: 1 1 0;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 16px;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: hidden;
+}
+
+body:has(.borrowing-page) .borrowing-layout > .borrowing-panel {
+    min-width: 0;
+    min-height: 0;
+    padding: 20px;
+    overflow: hidden;
+}
+
+/* Padatkan gambar dan jarak konten */
+body:has(.borrowing-page) .borrowing-equipment-image {
+    min-height: 120px !important;
+    height: 120px;
+    margin-top: 12px;
+}
+
+body:has(.borrowing-page) .borrowing-equipment-name {
+    margin-top: 12px;
+}
+
+body:has(.borrowing-page) .selected-equipment .borrowing-left-details {
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 14px;
+}
+
+body:has(.borrowing-page) .borrowing-details {
+    gap: 12px;
+}
+
+body:has(.borrowing-page) .borrowing-section + .borrowing-section {
+    padding-top: 12px;
+}
+
+body:has(.borrowing-page) .borrowing-standard {
+    padding-bottom: 14px;
+}
+
+body:has(.borrowing-page) .standard-equipment-list {
+    gap: 7px;
+}
+
+body:has(.borrowing-page) .borrowing-spec-row {
+    min-height: 34px;
+    padding: 7px 10px;
+}
+
+/* Tombol tetap di bagian bawah */
+body:has(.borrowing-page) .borrowing-actions {
+    flex: 0 0 auto;
+    margin-top: 12px;
+}
+
+/* Layar laptop yang lebih pendek */
+@media (max-height: 800px) {
+    body:has(.borrowing-page) .main-content {
+        padding-top: 10px !important;
+        padding-bottom: 8px !important;
+    }
+
+    body:has(.borrowing-page) .borrowing-header {
+        margin-bottom: 8px !important;
+    }
+
+    body:has(.borrowing-page) .borrowing-stepper {
+        margin-bottom: 8px !important;
+        padding: 10px 16px;
+    }
+
+    body:has(.borrowing-page) .borrowing-equipment-image {
+        min-height: 90px !important;
+        height: 90px;
+    }
+
+    body:has(.borrowing-page) .borrowing-panel {
+        padding: 14px !important;
+    }
+}
+
+
+/* RAPikan panel kiri pengajuan peminjaman */
+
+body:has(.borrowing-page) .borrowing-layout > .selected-equipment {
+    padding: 16px 18px !important;
+    gap: 0;
+}
+
+/* Judul panel */
+body:has(.borrowing-page) .selected-equipment > h2 {
+    margin-bottom: 0;
+}
+
+/* Gambar alat lebih proporsional */
+body:has(.borrowing-page) .borrowing-equipment-image {
+    flex: 0 0 100px;
+    min-height: 100px !important;
+    height: 100px;
+    margin-top: 10px;
+    border-radius: 9px;
+}
+
+body:has(.borrowing-page) .borrowing-equipment-image svg {
+    width: 48px;
+    height: 48px;
+}
+
+/* Nama dan kategori alat */
+body:has(.borrowing-page) .borrowing-equipment-name {
+    margin-top: 10px;
+}
+
+body:has(.borrowing-page) .borrowing-equipment-name h3 {
+    margin-bottom: 3px;
+    font-size: 15px;
+}
+
+body:has(.borrowing-page) .borrowing-equipment-name span {
+    font-size: 11px;
+}
+
+/* Stok alat */
+body:has(.borrowing-page) .borrowing-equipment-footer {
+    margin-top: 10px;
+    padding-top: 0;
+    gap: 8px;
+    font-size: 11px;
+}
+
+body:has(.borrowing-page) .stock-badge {
+    padding: 4px 8px;
+    font-size: 10px;
+}
+
+/* Detail dan spesifikasi */
+body:has(.borrowing-page) .selected-equipment .borrowing-left-details {
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 12px;
+}
+
+body:has(.borrowing-page) .selected-equipment .borrowing-left-details h2 {
+    font-size: 13px;
+}
+
+body:has(.borrowing-page) .selected-equipment .borrowing-left-details .borrowing-description {
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+body:has(.borrowing-page) .selected-equipment .borrowing-left-details .borrowing-spec-list {
+    margin-top: 7px;
+}
+
+body:has(.borrowing-page) .borrowing-spec-row {
+    grid-template-columns: 34% minmax(0, 1fr);
+    min-height: 29px;
+    gap: 8px;
+    padding: 5px 10px;
+    font-size: 11px;
+}
+
+body:has(.borrowing-page) .borrowing-spec-row span,
+body:has(.borrowing-page) .borrowing-spec-row strong {
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+/* Pastikan isi kiri tidak dipotong */
+body:has(.borrowing-page) .borrowing-layout > .selected-equipment {
+    overflow-y: auto !important;
+    scrollbar-width: thin;
+    scrollbar-color: #d7ceca transparent;
 }

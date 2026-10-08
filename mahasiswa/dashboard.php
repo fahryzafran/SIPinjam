@@ -3,9 +3,6 @@
 require_once "../config/app.php";
 require_once "../includes/auth.php";
 require_once "../includes/helpers.php";
-require_once "../includes/header.php";
-require_once "../includes/sidebar.php";
-require_once "../includes/topbar.php";
 
 require_role('mahasiswa');
 
@@ -15,7 +12,12 @@ require_once "../includes/header.php";
 require_once "../includes/sidebar.php";
 ?>
 
-<main class="main-content">
+<div class="main-wrapper">
+
+    <?php require_once "../includes/topbar.php"; ?>
+
+    <main class="main-content">
+
 
     <!-- Header Dashboard -->
     <div class="dashboard-header">

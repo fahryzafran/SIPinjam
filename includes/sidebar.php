@@ -1,5 +1,9 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
+
+$catalog_pages = ['katalog.php', 'detail_alat.php', 'ajukan.php'];
+
+$is_catalog_active = in_array($current_page, $catalog_pages, true);
 ?>
 
 <aside class="sidebar">
@@ -40,7 +44,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <a
         href="<?= BASE_URL ?>/mahasiswa/katalog.php"
-        class="sidebar-link <?= $current_page === 'katalog.php' ? 'active' : '' ?>"
+        class="sidebar-link <?= $is_catalog_active ? 'active' : '' ?>"
     >
         <span class="sidebar-icon">
         <i data-lucide="package"></i>
