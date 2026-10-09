@@ -4399,3 +4399,355 @@ body:has(.borrowing-schedule-page) .main-content {
         transform: translateY(0) scale(1);
     }
 }
+
+
+/* =========================================
+   LANGKAH 3: KEPERLUAN PEMINJAMAN
+   Memakai variabel tema SIPAKA (merah oxblood)
+   ========================================= */
+
+.keperluan-page {
+    font-size: 16px;
+    min-height: calc(100vh - 70px);
+    overflow: hidden;
+}
+
+/* Garis stepper yang sudah dilewati */
+.step-line.completed {
+    background: var(--primary);
+}
+
+/* Dua kolom: 5 / 7 seperti desain referensi */
+.keperluan-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
+    gap: 16px;
+}
+
+.keperluan-layout > .borrowing-panel {
+    padding: 22px;
+}
+
+.keperluan-layout .borrowing-panel > h2,
+.keperluan-panel-head h2 {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* ---- Kartu kiri ---- */
+
+.keperluan-equipment-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+    margin-top: 14px;
+    border-radius: 10px;
+    background: var(--background);
+    color: var(--primary);
+}
+
+.keperluan-equipment-image svg {
+    width: 48px;
+    height: 48px;
+    stroke-width: 1.4;
+}
+
+.keperluan-equipment-name {
+    margin-top: 14px;
+}
+
+.keperluan-equipment-name h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.keperluan-equipment-name span {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.keperluan-equipment-stock {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.keperluan-equipment-stock strong {
+    color: var(--text);
+}
+
+.keperluan-recap {
+    margin-top: 16px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #FCFBFA;
+}
+
+.keperluan-recap-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.keperluan-recap-title svg {
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+}
+
+.keperluan-recap-list {
+    margin: 12px 0 0;
+    padding-left: 24px;
+}
+
+.keperluan-recap-list > div {
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr);
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.keperluan-recap-list dt {
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.keperluan-recap-list dd {
+    min-width: 0;
+    margin: 0;
+    color: var(--text);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.keperluan-recap-sub {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+/* ---- Kartu kanan ---- */
+
+.keperluan-panel-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.keperluan-panel-head h2 {
+    font-size: 15px;
+}
+
+.keperluan-panel-head p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.keperluan-panel-icon {
+    display: flex;
+    flex: 0 0 38px;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(122, 48, 56, 0.08);
+    color: var(--primary);
+}
+
+.keperluan-panel-icon svg {
+    width: 19px;
+    height: 19px;
+}
+
+.keperluan-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.keperluan-field {
+    min-width: 0;
+}
+
+.keperluan-field .form-label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.keperluan-required {
+    color: var(--danger);
+}
+
+.keperluan-field .form-control,
+.keperluan-field .form-select {
+    min-height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-size: 13px;
+    box-shadow: none;
+}
+
+.keperluan-field textarea.form-control {
+    min-height: 92px;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.keperluan-field .form-control:focus,
+.keperluan-field .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(122, 48, 56, 0.09);
+}
+
+.keperluan-field .form-control[readonly] {
+    background: var(--background);
+    color: var(--muted);
+    cursor: not-allowed;
+}
+
+.keperluan-hint {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Info kuota: nuansa merah lembut */
+.keperluan-quota {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 13px 14px;
+    border: 1px solid rgba(122, 48, 56, 0.2);
+    border-radius: 10px;
+    background: rgba(122, 48, 56, 0.05);
+}
+
+.keperluan-quota svg {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    color: var(--primary);
+}
+
+.keperluan-quota p {
+    margin: 0;
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.keperluan-quota strong {
+    font-weight: 700;
+}
+
+/* Tombol di luar kartu */
+.keperluan-page .borrowing-page-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 10px 18px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.keperluan-page .borrowing-back-button {
+    background: #fff;
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.keperluan-page .borrowing-back-button:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.keperluan-page .borrowing-next-button svg {
+    width: 15px;
+    height: 15px;
+}
+
+@media (max-width: 900px) {
+    .keperluan-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .keperluan-layout > .borrowing-panel {
+        padding: 18px;
+    }
+}
+
+.keperluan-page .form-label {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.keperluan-page .form-control,
+.keperluan-page .form-select {
+    font-size: 15px;
+    min-height: 44px;
+}
+
+.keperluan-page .keperluan-hint {
+    font-size: 13px;
+}
+
+.keperluan-page .keperluan-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.keperluan-page .keperluan-field .form-label {
+    display: block;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.keperluan-page .keperluan-field .form-control,
+.keperluan-page .keperluan-field .form-select {
+    margin-top: 0;
+}
+
+.keperluan-page .keperluan-conditional {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.keperluan-page .keperluan-conditional[hidden] {
+    display: none !important;
+}
+    

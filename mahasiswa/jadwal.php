@@ -299,9 +299,17 @@ require_once "../includes/sidebar.php";
                         Jadwal lolos pemeriksaan awal dan tidak ditemukan bentrok
                         pada ruangan serta waktu yang dipilih.
                     </p>
-                    <button type="button" id="tutupJadwalPopup">
+
+                    <button type="button" id="btnMengerti" class="btn-popup-success">
                         Mengerti
                     </button>
+
+                    <script>
+                    document.getElementById('btnMengerti').addEventListener('click', function () {
+                        window.location.href =
+                            '<?= BASE_URL ?>/mahasiswa/keperluan.php?alat_id=<?= (int)($_GET["alat_id"] ?? 0) ?>';
+                    });
+                    </script>
                 </div>
             </div>
             <?php unset($_SESSION['jadwal_lolos']); ?>
