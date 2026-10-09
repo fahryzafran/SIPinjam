@@ -327,15 +327,12 @@ require_once "../includes/sidebar.php";
 
             <?php if ((int) $alat['stok_total'] > 0): ?>
 
-                <button
-                    type="button"
-                    class="borrowing-next-button"
-                    disabled
-                    title="Tahap jadwal akan diaktifkan setelah dibuat"
-                >
-                    Lanjut ke Jadwal Peminjaman
-                    <i data-lucide="arrow-right"></i>
-                </button>
+            <a
+                href="<?= BASE_URL ?>/mahasiswa/jadwal.php?alat_id=<?= (int) $alat['id'] ?>"
+                class="btn btn-primary borrowing-next-button"
+            >
+                Lanjut ke Jadwal Peminjaman
+            </a>
 
             <?php else: ?>
 
