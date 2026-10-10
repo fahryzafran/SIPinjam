@@ -1,7 +1,14 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
 
-$catalog_pages = ['katalog.php', 'detail_alat.php', 'ajukan.php'];
+$catalog_pages = [
+    'katalog.php',
+    'detail_alat.php',
+    'ajukan.php',
+    'jadwal.php',
+    'keperluan.php',
+    'konfirmasi.php'
+];
 
 $is_catalog_active = in_array($current_page, $catalog_pages, true);
 ?>
@@ -54,7 +61,7 @@ $is_catalog_active = in_array($current_page, $catalog_pages, true);
 
     <a
         href="<?= BASE_URL ?>/mahasiswa/riwayat.php"
-        class="sidebar-link <?= $current_page === 'riwayat.php' ? 'active' : '' ?>"
+        class="sidebar-link <?= in_array($current_page, ['riwayat.php', 'detail_peminjaman.php'], true) ? 'active' : '' ?>"
     >
         <span class="sidebar-icon">
             <i data-lucide="clock-3"></i>

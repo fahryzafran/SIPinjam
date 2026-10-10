@@ -80,25 +80,29 @@ try {
 /* Kelas diambil dari akun mahasiswa, tidak bisa diubah di form */
 $user_id = $_SESSION['user']['id'] ?? null;
 $kelas = '';
- 
+$kelas_id = 0;
+
 if ($user_id) {
     try {
         $stmt = $pdo->prepare("
-    SELECT k.nama_kelas
-    FROM kelas_mahasiswa km
-    INNER JOIN kelas k ON k.id = km.kelas_id
-    WHERE km.user_id = :user_id
-    LIMIT 1
-    ");
+            SELECT k.id, k.nama_kelas
+            FROM kelas_mahasiswa km
+            INNER JOIN kelas k ON k.id = km.kelas_id
+            WHERE km.user_id = :user_id
+            LIMIT 1
+        ");
+        $stmt->execute([':user_id' => $user_id]);
+        $baris_kelas = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $stmt->execute([':user_id' => $user_id]);
-    $kelas = (string) ($stmt->fetchColumn() ?: '');
+        if ($baris_kelas) {
+            $kelas_id = (int) $baris_kelas['id'];
+            $kelas = (string) $baris_kelas['nama_kelas'];
+        }
     } catch (PDOException $e) {
         $kelas = '';
+        $kelas_id = 0;
     }
 }
- 
-/* Daftar dosen untuk pilihan dosen pengampu */
 
 /* Pilihan jenis keperluan */
 $pilihan_tujuan = [
@@ -106,6 +110,7 @@ $pilihan_tujuan = [
     'Organisasi'
 ];
 
+/* Daftar dosen (untuk dosen penanggung jawab organisasi) */
 $daftar_dosen = [];
 
 try {
@@ -128,35 +133,40 @@ try {
 $daftar_mata_kuliah = [];
 $daftar_organisasi = [];
 
-try {
-    $stmt = $pdo->prepare("
-        SELECT
-            id,
-            kode_mata_kuliah,
-            nama_mata_kuliah,
-            dosen_pengampu,
-            dosen_mitra
-        FROM mata_kuliah
-        WHERE kelas_id = :kelas_id
-        ORDER BY nama_mata_kuliah
-    ");
-
-    $stmt->execute([':kelas_id' => 1]);
-    $daftar_mata_kuliah = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $daftar_mata_kuliah = [];
+if ($kelas_id > 0) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT
+                id,
+                kode_mata_kuliah,
+                nama_mata_kuliah,
+                dosen_pengampu,
+                dosen_mitra
+            FROM mata_kuliah
+            WHERE kelas_id = :kelas_id
+            ORDER BY nama_mata_kuliah
+        ");
+        $stmt->execute([':kelas_id' => $kelas_id]);
+        $daftar_mata_kuliah = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $daftar_mata_kuliah = [];
+    }
 }
 
-/*
- * Nilai pilihan yang disimpan di draft.
- */
-$tujuan = '';
-$mata_kuliah = '';
-$dosen_pengampu = '';
-$organisasi = '';
-$dosen_pj = '';
-$keterangan = '';
+/* Mata kuliah per id, untuk validasi di server */
+$mata_kuliah_per_id = [];
 
+foreach ($daftar_mata_kuliah as $mk) {
+    $mata_kuliah_per_id[(string) $mk['id']] = $mk;
+}
+
+$nama_dosen_valid = array_column($daftar_dosen, 'nama');
+$nama_organisasi_valid = array_column($daftar_organisasi, 'nama');
+
+/*
+ * Nilai pilihan: dari POST saat formulir dikirim,
+ * atau dari draft saat mahasiswa kembali ke langkah ini.
+ */
 $tersimpan = is_array($draft['keperluan'] ?? null)
     ? $draft['keperluan']
     : [];
@@ -165,78 +175,92 @@ $sumber_nilai = $_SERVER['REQUEST_METHOD'] === 'POST'
     ? $_POST
     : $tersimpan;
 
-$tujuan = trim((string)($sumber_nilai['tujuan'] ?? ''));
-$mata_kuliah = trim((string)($sumber_nilai['mata_kuliah'] ?? ''));
-$dosen_pengampu = trim((string)($sumber_nilai['dosen_pengampu'] ?? ''));
-$organisasi = trim((string)($sumber_nilai['organisasi'] ?? ''));
-$dosen_pj = trim((string)($sumber_nilai['dosen_pj'] ?? ''));
-$keterangan = trim((string)($sumber_nilai['keterangan'] ?? ''));
+$ambil_teks = static function (array $sumber, string $kunci): string {
+    return is_string($sumber[$kunci] ?? null) ? trim($sumber[$kunci]) : '';
+};
 
- 
+$tujuan = $ambil_teks($sumber_nilai, 'tujuan');
+$mata_kuliah = $ambil_teks($sumber_nilai, 'mata_kuliah');
+$dosen_pengampu = $ambil_teks($sumber_nilai, 'dosen_pengampu');
+$organisasi = $ambil_teks($sumber_nilai, 'organisasi');
+$dosen_pj = $ambil_teks($sumber_nilai, 'dosen_pj');
+$keterangan = $ambil_teks($sumber_nilai, 'keterangan');
+
 /* ==========================================================
-   3. Proses formulir
+   3. Proses formulir (hanya saat dikirim)
    ========================================================== */
- 
+
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
- 
+
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (
-        !isset($_POST['csrf_token'], $_SESSION['csrf_token']) ||
-        !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])
-    ) {
+    $csrf = $_POST['csrf_token'] ?? '';
+
+    if (!is_string($csrf) || !hash_equals($_SESSION['csrf_token'], $csrf)) {
         $errors[] = 'Permintaan tidak valid. Silakan muat ulang halaman.';
     }
-}
 
-
-if (!in_array($tujuan, $pilihan_tujuan, true)) {
-    $errors[] = 'Pilih jenis keperluan.';
-}
-
-if ($tujuan === 'Penggunaan kelas') {
-    if ($mata_kuliah === '') {
-        $errors[] = 'Pilih mata kuliah.';
+    if (!in_array($tujuan, $pilihan_tujuan, true)) {
+        $errors[] = 'Pilih jenis keperluan.';
     }
 
-    if ($dosen_pengampu === '') {
-        $errors[] = 'Pilih dosen pengampu.';
+    $mk_dipilih = $mata_kuliah_per_id[$mata_kuliah] ?? null;
+
+    if ($tujuan === 'Penggunaan kelas') {
+        if (!$mk_dipilih) {
+            $errors[] = 'Pilih mata kuliah dari daftar kelasmu.';
+        } else {
+            $dosen_mk = array_filter([
+                (string) ($mk_dipilih['dosen_pengampu'] ?? ''),
+                (string) ($mk_dipilih['dosen_mitra'] ?? '')
+            ]);
+
+            if (!in_array($dosen_pengampu, $dosen_mk, true)) {
+                $errors[] = 'Pilih dosen yang mengampu mata kuliah tersebut.';
+            }
+        }
     }
-}
 
-if ($tujuan === 'Organisasi') {
-    if ($organisasi === '') {
-        $errors[] = 'Pilih organisasi.';
+    if ($tujuan === 'Organisasi') {
+        if (!in_array($organisasi, $nama_organisasi_valid, true)) {
+            $errors[] = 'Pilih organisasi dari daftar.';
+        }
+
+        if (!in_array($dosen_pj, $nama_dosen_valid, true)) {
+            $errors[] = 'Pilih dosen penanggung jawab organisasi.';
+        }
     }
 
-    if ($dosen_pj === '') {
-        $errors[] = 'Pilih dosen penanggung jawab organisasi.';
+    if (mb_strlen($keterangan) < 10 || mb_strlen($keterangan) > 500) {
+        $errors[] = 'Keterangan harus berisi 10 sampai 500 karakter.';
     }
-}
 
-if (mb_strlen($keterangan) < 10 || mb_strlen($keterangan) > 500) {
-    $errors[] = 'Keterangan harus berisi 10 sampai 500 karakter.';
-}
+    if (!$errors) {
+        $untuk_kelas = $tujuan === 'Penggunaan kelas';
 
-if (!$errors) {
-    $_SESSION['peminjaman_draft']['keperluan'] = [
-        'kelas' => $kelas,
-        'tujuan' => $tujuan,
-        'mata_kuliah' => $tujuan === 'Penggunaan kelas' ? $mata_kuliah : '',
-        'dosen_pengampu' => $tujuan === 'Penggunaan kelas' ? $dosen_pengampu : '',
-        'organisasi' => $tujuan === 'Organisasi' ? $organisasi : '',
-        'dosen_pj' => $tujuan === 'Organisasi' ? $dosen_pj : '',
-        'keterangan' => $keterangan
-    ];
+        $_SESSION['peminjaman_draft']['keperluan'] = [
+            'kelas' => $kelas,
+            'kelas_id' => $kelas_id,
+            'tujuan' => $tujuan,
+            'mata_kuliah' => $untuk_kelas ? $mata_kuliah : '',
+            'nama_mata_kuliah' => $untuk_kelas
+                ? (string) $mk_dipilih['nama_mata_kuliah']
+                : '',
+            'dosen_pengampu' => $untuk_kelas ? $dosen_pengampu : '',
+            'organisasi' => $untuk_kelas ? '' : $organisasi,
+            'dosen_pj' => $untuk_kelas ? '' : $dosen_pj,
+            'keterangan' => $keterangan
+        ];
 
-    header(
-        "Location: " . BASE_URL .
-        "/mahasiswa/konfirmasi.php?alat_id=" . $alat_id
-    );
-    exit;
+        header(
+            "Location: " . BASE_URL .
+            "/mahasiswa/konfirmasi.php?alat_id=" . $alat_id
+        );
+        exit;
+    }
 }
  
 /* ==========================================================
@@ -318,7 +342,23 @@ require_once "../includes/sidebar.php";
                 <span>Konfirmasi</span>
             </div>
         </section>
- 
+
+        <!-- Notifikasi -->
+        <?php if ($errors): ?>
+            <div class="alert alert-danger" role="alert">
+                <strong>
+                    <i data-lucide="alert-circle"></i>
+                    Keperluan belum lengkap
+                </strong>
+
+                <ul class="mb-0 mt-2">
+                    <?php foreach ($errors as $error): ?>
+                        <li><?= e($error) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+
         <section class="keperluan-layout">
  
             <!-- Kartu kiri: alat dan jadwal -->
@@ -574,14 +614,17 @@ require_once "../includes/sidebar.php";
 
                 if (!mk) return;
 
-                [mk.dosen_pengampu, mk.dosen_mitra].forEach(namaDosen => {
-                    const option = document.createElement('option');
-                    option.value = namaDosen;
-                    option.textContent = namaDosen;
-                    option.selected = namaDosen === dosenTersimpan;
+                /* dosen_mitra bisa kosong, jadi lewati nilai kosong */
+                [mk.dosen_pengampu, mk.dosen_mitra]
+                    .filter(namaDosen => namaDosen)
+                    .forEach(namaDosen => {
+                        const option = document.createElement('option');
+                        option.value = namaDosen;
+                        option.textContent = namaDosen;
+                        option.selected = namaDosen === dosenTersimpan;
 
-                    dosenPengampu.appendChild(option);
-            });
+                        dosenPengampu.appendChild(option);
+                    });
             }
 
             mataKuliah.addEventListener('change', perbaruiPilihanDosen);
@@ -604,6 +647,7 @@ require_once "../includes/sidebar.php";
         });
         </script>
 
+                </form>
             </article>
  
         </section>
@@ -633,20 +677,12 @@ require_once "../includes/sidebar.php";
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('keperluanForm');
- 
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('keperluanForm');
 
     form.addEventListener('submit', function (event) {
         if (!form.checkValidity()) {
             event.preventDefault();
             form.reportValidity();
         }
-        });
-
-        <?php if ($errors): ?>
-        alert(<?= json_encode(implode("\n", $errors)) ?>);
-        <?php endif; ?>
     });
 });
 </script>

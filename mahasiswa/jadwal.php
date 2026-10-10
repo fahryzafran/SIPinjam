@@ -210,8 +210,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         /* Simpan draft hanya jika lolos pemeriksaan */
         if (!$errors) {
+            /* Pertahankan kelengkapan tambahan yang dipilih di langkah 1 */
+            $draft_lama = $_SESSION['peminjaman_draft'] ?? [];
+            $kelengkapan_lama = (
+                is_array($draft_lama)
+                && (int) ($draft_lama['alat_id'] ?? 0) === (int) $alat['id']
+                && is_array($draft_lama['kelengkapan'] ?? null)
+            ) ? $draft_lama['kelengkapan'] : [];
+
             $_SESSION['peminjaman_draft'] = [
                 'alat_id' => (int) $alat['id'],
+                'kelengkapan' => $kelengkapan_lama,
                 'tanggal' => $tanggal,
                 'ruangan' => $ruangan,
                 'jam_mulai' => $jam_mulai,

@@ -40,6 +40,16 @@ $page_title = $page_title ?? APP_NAME;
         rel="stylesheet"
         href="<?= BASE_URL ?>/assets/css/style.css"
     >
+
+    <!-- Animasi masuk setelah login (penanda dari login.js) -->
+    <script>
+        try {
+            if (sessionStorage.getItem('sipaka_baru_masuk')) {
+                sessionStorage.removeItem('sipaka_baru_masuk');
+                document.documentElement.classList.add('baru-masuk');
+            }
+        } catch (e) {}
+    </script>
 </head>
 
 <body>

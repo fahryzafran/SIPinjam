@@ -1,10 +1,10 @@
-
 <?php
 
 require_once "../config/app.php";
 require_once "../includes/auth.php";
 require_once "../includes/helpers.php";
 require_once "../config/database.php";
+require_once "../includes/kelengkapan.php";
 
 require_role('mahasiswa');
 
@@ -37,6 +37,48 @@ $alat = $stmt->fetch();
 if (!$alat) {
     http_response_code(404);
     exit('Alat tidak ditemukan.');
+}
+
+/* Token keamanan formulir */
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+$draft = $_SESSION['peminjaman_draft'] ?? [];
+$draft_alat_ini = is_array($draft) && (int) ($draft['alat_id'] ?? 0) === (int) $alat['id'];
+
+/* Kelengkapan yang sudah dipilih sebelumnya (jika kembali ke langkah ini) */
+$kelengkapan_dipilih = $draft_alat_ini
+    ? saring_kelengkapan($draft['kelengkapan'] ?? [])
+    : [];
+
+$error_ajukan = '';
+
+/* Simpan pilihan kelengkapan lalu lanjut ke jadwal */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $csrf = $_POST['csrf_token'] ?? '';
+
+    if (!is_string($csrf) || !hash_equals($_SESSION['csrf_token'], $csrf)) {
+        $error_ajukan = 'Permintaan tidak valid. Muat ulang halaman.';
+    } elseif ((int) $alat['stok_total'] < 1) {
+        $error_ajukan = 'Stok alat sedang habis.';
+    } else {
+        $kelengkapan_dipilih = saring_kelengkapan($_POST['kelengkapan'] ?? []);
+
+        if ($draft_alat_ini) {
+            /* Alat sama: pertahankan jadwal/keperluan yang sudah diisi */
+            $_SESSION['peminjaman_draft']['kelengkapan'] = $kelengkapan_dipilih;
+        } else {
+            /* Alat berbeda: mulai draft baru */
+            $_SESSION['peminjaman_draft'] = [
+                'alat_id' => (int) $alat['id'],
+                'kelengkapan' => $kelengkapan_dipilih
+            ];
+        }
+
+        header("Location: " . BASE_URL . "/mahasiswa/jadwal.php?alat_id=" . (int) $alat['id']);
+        exit;
+    }
 }
 
 $spesifikasi = preg_split(
@@ -259,33 +301,23 @@ require_once "../includes/sidebar.php";
                             Pilih aksesori tambahan jika diperlukan.
                         </p>
 
-                        <label class="extra-option">
-                            <input
-                                type="checkbox"
-                                name="kelengkapan[]"
-                                value="Adaptor HDMI to Type-C"
-                            >
+                        <?php foreach (daftar_kelengkapan_tambahan() as $nama_kelengkapan => $ikon_kelengkapan): ?>
+                            <label class="extra-option">
+                                <input
+                                    type="checkbox"
+                                    name="kelengkapan[]"
+                                    value="<?= e($nama_kelengkapan) ?>"
+                                    form="ajukanForm"
+                                    <?= in_array($nama_kelengkapan, $kelengkapan_dipilih, true) ? 'checked' : '' ?>
+                                >
 
-                            <span class="extra-option-text">
-                                <i data-lucide="plug"></i>
-                                Adaptor HDMI to Type-C
-                                <small>Opsional</small>
-                            </span>
-                        </label>
-
-                        <label class="extra-option">
-                            <input
-                                type="checkbox"
-                                name="kelengkapan[]"
-                                value="Pointer / Wireless Presenter"
-                            >
-
-                            <span class="extra-option-text">
-                                <i data-lucide="presentation"></i>
-                                Pointer / Wireless Presenter
-                                <small>Opsional</small>
-                            </span>
-                        </label>
+                                <span class="extra-option-text">
+                                    <i data-lucide="<?= e($ikon_kelengkapan) ?>"></i>
+                                    <?= e($nama_kelengkapan) ?>
+                                    <small>Opsional</small>
+                                </span>
+                            </label>
+                        <?php endforeach; ?>
 
                     </div>
 
@@ -306,6 +338,12 @@ require_once "../includes/sidebar.php";
                         <p>
                             Stok alat sedang habis. Pengajuan belum
                             dapat dilanjutkan.
+                            <a
+                                href="<?= BASE_URL ?>/mahasiswa/saran.php?alat_id=<?= (int) $alat['id'] ?>"
+                                class="ajukan-link-saran"
+                            >
+                                Usulkan penambahan stok
+                            </a>
                         </p>
                     </div>
 
@@ -314,6 +352,12 @@ require_once "../includes/sidebar.php";
             </article>
 
         </section>
+
+        <?php if ($error_ajukan !== ''): ?>
+            <div class="alert alert-danger mt-3" role="alert">
+                <?= e($error_ajukan) ?>
+            </div>
+        <?php endif; ?>
 
         <!-- NAVIGASI -->
         <div class="borrowing-actions">
@@ -327,12 +371,24 @@ require_once "../includes/sidebar.php";
 
             <?php if ((int) $alat['stok_total'] > 0): ?>
 
-            <a
-                href="<?= BASE_URL ?>/mahasiswa/jadwal.php?alat_id=<?= (int) $alat['id'] ?>"
-                class="btn btn-primary borrowing-next-button"
+            <form
+                method="POST"
+                action="<?= BASE_URL ?>/mahasiswa/ajukan.php?alat_id=<?= (int) $alat['id'] ?>"
+                id="ajukanForm"
             >
-                Lanjut ke Jadwal Peminjaman
-            </a>
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="<?= e($_SESSION['csrf_token']) ?>"
+                >
+
+                <button
+                    type="submit"
+                    class="btn btn-primary borrowing-next-button"
+                >
+                    Lanjut ke Jadwal Peminjaman
+                </button>
+            </form>
 
             <?php else: ?>
 
